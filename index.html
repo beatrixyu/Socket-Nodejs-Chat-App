@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <script src="../../socket.io/socket.io.js"></script>
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+      integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+      crossorigin="anonymous"
+    ></script>
+    <link
+      href="https://fonts.googleapis.com/css?family=B612+Mono&display=swap"
+      rel="stylesheet"
+    />
+    <title>Chat Box</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        font-family: "B612 Mono", monospace;
+        background-color: #33313b;
+        border-radius: 5px;
+        border: none;
+        margin: 0; padding: 0;
+      }
+        html {margin-bottom: 50px}
+        body { font: 10px Helvetica, Arial; }
+        form { background: #fdc57b; padding: 3px; position: fixed; bottom: 0; width: 100%; border-color: #fdc57b; border-top-style: solid; border-top-width: 1px;}
+        form input { background-color: #007880; border-style: solid; border-width: 1px; border-color: #fdc57b; padding: 10px; width: 85%; margin-right: .5%; color:#33313b}
+        form button { width: 10%; background: #62374e; border: none; padding: 10px; margin-left: 1%; color: #fdc57b; font-size: 8px }
+        #messages { list-style-type: none; margin: 0; padding: 0; }
+        #messages li { padding: 5px 10px; color: #fdc57b}
+        #messages li:nth-child(odd) { background: #62374e; color: #fdc57b}   
+    </style>
+  </head>
+  <body>
+      <ul id="messages"></ul>
+      <form action="/" method="POST" id="chatForm">
+        <input id="txt" autocomplete="off" autofocus="on" oninput="isTyping()"
+          placeholder="type your message here..." /><button>Send</button>
+      </form>
+      <script>
+        var socket = io.connect('http://localhost:8080');
+        // submit text message without reload/refresh the page
+        $('form').submit(function (e) {
+          e.preventDefault(); // prevents page reloading
+          socket.emit('chat_message', $('#txt').val());
+          $('#txt').val('');
+          return false;
+        });
+        // append the chat text message
+        socket.on('chat_message', function (msg) {
+          $('#messages').append($('<li>').html(msg));
+        });
+        
+        // append text if someone is online
+        socket.on('is_online', function (username) {
+          $('#messages').append($('<li>').html(username));
+        });
+        // ask username
+        var username = prompt('Welcome! Please tell me your name');
+        socket.emit('username', username);
+      </script>
+
+</html>

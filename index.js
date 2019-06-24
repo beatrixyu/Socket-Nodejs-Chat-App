@@ -3,7 +3,7 @@ const app = express();
 const http = require("http").Server(app);
 const io = require("socket.io")(http);
 
-app.get("/", function(req, res) {
+app.get("/chat-group-app/", function(req, res) {
   // res.send("Hello world!");
   res.sendFile(__dirname + "/index.html");
 });
